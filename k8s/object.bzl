@@ -72,24 +72,27 @@ def _impl(ctx):
                 image_spec["tarball"] = _runfiles(ctx, image["legacy"])
                 all_inputs.append(image["legacy"])
 
-            blobsums = image.get("blobsum", [])
-            image_spec["digest"] = ",".join([_runfiles(ctx, f) for f in blobsums])
-            all_inputs.extend(blobsums)
 
-            diff_ids = image.get("diff_id", [])
-            image_spec["diff_id"] = ",".join([_runfiles(ctx, f) for f in diff_ids])
-            all_inputs.extend(diff_ids)
+            if not image.get("legacy"):
+                blobsums = image.get("blobsum", [])
+                image_spec["digest"] = ",".join([_runfiles(ctx, f) for f in blobsums])
+                all_inputs.extend(blobsums)
 
-            blobs = image.get("zipped_layer", [])
-            image_spec["compressed_layer"] = ",".join([_runfiles(ctx, f) for f in blobs])
-            all_inputs.extend(blobs)
+                diff_ids = image.get("diff_id", [])
+                image_spec["diff_id"] = ",".join([_runfiles(ctx, f) for f in diff_ids])
+                all_inputs.extend(diff_ids)
 
-            uncompressed_blobs = image.get("unzipped_layer", [])
-            image_spec["uncompressed_layer"] = ",".join([_runfiles(ctx, f) for f in uncompressed_blobs])
-            all_inputs.extend(uncompressed_blobs)
+                blobs = image.get("zipped_layer", [])
+                image_spec["compressed_layer"] = ",".join([_runfiles(ctx, f) for f in blobs])
+                all_inputs.extend(blobs)
+
+                uncompressed_blobs = image.get("unzipped_layer", [])
+                image_spec["uncompressed_layer"] = ",".join([_runfiles(ctx, f) for f in uncompressed_blobs])
+                all_inputs.extend(uncompressed_blobs)
 
             image_spec["config"] = _runfiles(ctx, image["config"])
             all_inputs.append(image["config"])
+
 
             # Quote the semi-colons so they don't complete the command.
             image_specs.append("';'".join([
